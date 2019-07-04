@@ -37,6 +37,7 @@ from taiga.base.api.fields import validate_user_email_allowed_domains
 from taiga.base.api.utils import get_object_or_404
 from taiga.base.filters import MembersFilterBackend
 from taiga.base.mails import mail_builder
+from taiga.base.api.validators import PasswordValidator
 from taiga.users.services import get_user_by_username_or_email
 from easy_thumbnails.source_generators import pil_image
 
@@ -189,8 +190,9 @@ class UsersViewSet(ModelCrudViewSet):
         self.check_permissions(request, "change_password_from_recovery", None)
 
         validator = validators.RecoveryValidator(data=request.DATA, many=False)
-        if not validator.is_valid():
-            raise exc.WrongArguments(_("Token is invalid"))
+        is_valid = validator.is_valid()
+        if not is_valid:
+            raise exc.RequestValidationError(validator.errors)
 
         try:
             user = models.User.objects.get(token=validator.data["token"])
@@ -221,8 +223,10 @@ class UsersViewSet(ModelCrudViewSet):
         if not password:
             raise exc.WrongArguments(_("New password parameter needed"))
 
-        if len(password) < 6:
-            raise exc.WrongArguments(_("Invalid password length at least 6 charaters needed"))
+        validator = PasswordValidator(data=request.DATA, many=False)
+        is_valid = validator.is_valid()
+        if not is_valid:
+            raise exc.RequestValidationError(validator.errors)
 
         if current_password and not request.user.check_password(current_password):
             raise exc.WrongArguments(_("Invalid current password"))

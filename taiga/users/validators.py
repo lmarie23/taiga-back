@@ -75,9 +75,8 @@ class UserAdminValidator(UserValidator):
         return attrs
 
 
-class RecoveryValidator(validators.Validator):
+class RecoveryValidator(validators.PasswordValidator):
     token = serializers.CharField(max_length=200)
-    password = serializers.CharField(min_length=6)
 
 
 class ChangeEmailValidator(validators.Validator):

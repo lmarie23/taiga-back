@@ -15,7 +15,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import re
 
+from django.conf import settings
+from django.utils.translation import ugettext as _
+from django.core import validators as core_validators
+from taiga.base.exceptions import ValidationError
 from . import serializers
 
 
@@ -25,3 +30,18 @@ class Validator(serializers.Serializer):
 
 class ModelValidator(serializers.ModelSerializer):
     pass
+
+
+class PasswordValidator(Validator):
+    password = serializers.CharField()
+
+    def validate_password(self, attrs, source):
+        value = attrs[source]
+        validator = core_validators.RegexValidator(re.compile(settings.PASSWORD_VALIDATOR_REGEX),
+                                                   _("invalid password"), "invalid")
+
+        try:
+            validator(value)
+        except ValidationError:
+            raise ValidationError(_("Required. Ask your Taiga system administrators for details."))
+        return attrs

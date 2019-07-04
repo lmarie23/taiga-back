@@ -566,6 +566,8 @@ MAX_MEMBERSHIPS_PUBLIC_PROJECTS = None # None == no limit
 
 MAX_PENDING_MEMBERSHIPS = 30 # Max number of unconfirmed memberships in a project
 
+PASSWORD_VALIDATOR_REGEX = r'[A-Za-z0-9@#$%^&+=]{8,}'  # Password must match this pattern at registration and renewal
+
 from .sr import *
 
 IMPORTERS = {
