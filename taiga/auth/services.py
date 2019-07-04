@@ -26,6 +26,7 @@ not uses clasess and uses simple functions.
 """
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction as tx
 from django.db import IntegrityError
@@ -60,6 +61,11 @@ def send_register_email(user) -> bool:
     cancel_token = get_token_for_user(user, "cancel_account")
     context = {"user": user, "cancel_token": cancel_token}
     email = mail_builder.registered_user(user, context)
+    if settings.ENABLE_ACCOUNT_ACTIVATION:
+        user.is_active = False
+        user.save()
+        context["activation_token"] = get_token_for_user(user, "activate_account")
+        email = mail_builder.activate_account(user, context)
     return bool(email.send())
 
 

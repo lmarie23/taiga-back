@@ -334,6 +334,29 @@ class UsersViewSet(ModelCrudViewSet):
         user.cancel()
         return response.NoContent()
 
+    @list_route(methods=["POST"])
+    def activate(self, request, pk=None):
+        """
+        Activate an account via token
+        """
+        validator = validators.ActivateAccountValidator(data=request.DATA, many=False)
+        if not validator.is_valid():
+            raise exc.WrongArguments(_("Invalid, are you sure the token is correct?"))
+
+        try:
+            max_age_activate_account = getattr(settings, "MAX_AGE_ACTIVATE_ACCOUNT", None)
+            user = get_user_for_token(validator.data["activation_token"], "activate_account",
+                                      max_age=max_age_activate_account)
+
+        except exc.NotAuthenticated:
+            raise exc.WrongArguments(_("Invalid, are you sure the token is correct?"))
+
+        if not user.is_active:
+            raise exc.WrongArguments(_("Invalid, are you sure the token is correct?"))
+
+        user.is_active = True
+        user.save()
+        return response.NoContent()
 
     @list_route(methods=["POST"])
     def export(self, request, pk=None):

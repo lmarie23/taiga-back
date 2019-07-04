@@ -423,6 +423,7 @@ AUTHENTICATION_BACKENDS = (
 
 MAX_AGE_AUTH_TOKEN = None
 MAX_AGE_CANCEL_ACCOUNT = 30 * 24 * 60 * 60 # 30 days in seconds
+MAX_AGE_ACTIVATE_ACCOUNT = 2 * 24 * 60 * 60 # 2 days in seconds
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
@@ -567,6 +568,7 @@ MAX_MEMBERSHIPS_PUBLIC_PROJECTS = None # None == no limit
 MAX_PENDING_MEMBERSHIPS = 30 # Max number of unconfirmed memberships in a project
 
 PASSWORD_VALIDATOR_REGEX = r'[A-Za-z0-9@#$%^&+=]{8,}'  # Password must match this pattern at registration and renewal
+ENABLE_ACCOUNT_ACTIVATION = False  # Enable email validation, send an email to validate account
 
 from .sr import *
 

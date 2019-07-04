@@ -87,6 +87,9 @@ class CancelAccountValidator(validators.Validator):
     cancel_token = serializers.CharField(max_length=200)
 
 
+class ActivateAccountValidator(validators.Validator):
+    activation_token = serializers.CharField(max_length=200)
+
 ######################################################
 # Role
 ######################################################
