@@ -61,7 +61,7 @@ def send_register_email(user) -> bool:
     cancel_token = get_token_for_user(user, "cancel_account")
     context = {"user": user, "cancel_token": cancel_token}
     email = mail_builder.registered_user(user, context)
-    if settings.ENABLE_ACCOUNT_ACTIVATION:
+    if settings.ENABLE_ACCOUNT_ACTIVATION and len(user.memberships.all()) is 0:
         user.is_active = False
         user.save()
         context["activation_token"] = get_token_for_user(user, "activate_account")
